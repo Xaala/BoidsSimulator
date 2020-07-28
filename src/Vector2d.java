@@ -11,6 +11,12 @@ public class Vector2d
         this.y = y;
     }
 
+    public Vector2d(Vector2d other)
+    {
+        this.x = other.x;
+        this.y = other.y;
+    }
+
     public Vector2d(float mag, float angle)
     {
         x = (float)(mag * Math.cos(angle));
@@ -58,7 +64,7 @@ public class Vector2d
         float v0 = b.x - a.x;
         float v1 = b.y - a.y;
 
-        return Math.sqrt(v0 * v0 + v1 * v1);
+        return Math.sqrt(v0*v0 + v1*v1);
     }
 }
 

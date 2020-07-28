@@ -1,7 +1,9 @@
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ThreadLocalRandom;
+
 
 //A "Bird Like Object", contains logic for movement as well as rendering.
 public class Boid
@@ -16,11 +18,14 @@ public class Boid
 
     private Simulation parent;
 
+    private int boidId;
 
-    public Boid(int x, int y, Simulation parent)
+
+    public Boid(int x, int y, int boidId,  Simulation parent)
     {
         currentPosition = new Vector2d(x, y);
         this.parent = parent;
+        this.boidId = boidId;
 
         orientation = (float)Math.random() * 360; //Facing true
         velocity = 2.0f; //Default velocity of 2 px
@@ -28,28 +33,35 @@ public class Boid
         viewRadius = 50.0; //50px
     }
 
-    public void calculateMove()
+    public void calculateMove(List<Boid> boids)
     {
         System.out.println("Calculating move.");
 
-        processSeparation();
-        processAlignment();
-        processCohesion();
-        processCollisionAvoidance();
-        processWrapAround();
+        processSeparation(boids);
+        processAlignment(boids);
+        processCohesion(boids);
+        processCollisionAvoidance(boids);
 
+        processWrapAround();
     }
 
     //Avoid smacking into other Boids
-    private void processSeparation()
+    private void processSeparation(List<Boid> boids)
     {
         //Check if any boids are nearby within our field of view
-        if (false)
+        boolean nearbyBoids = false;
+        for (int i = 0; i < boids.size(); i++)
         {
-
+            if (i != boidId) //Skip self
+            {
+                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius) {
+                    //TODO:
+                    orientation = (orientation + 15) % 360;
+                }
+            }
         }
-        //if not keep going in the same direction
-        else
+
+        if (nearbyBoids == false)
         {
             Vector2d movement = new Vector2d(velocity, orientation);
             currentPosition.add(movement);
@@ -57,19 +69,19 @@ public class Boid
     }
 
     //Tend to travel in the same direction as other nearby Boids
-    private void processAlignment()
+    private void processAlignment(List<Boid> boids)
     {
 
     }
 
     //Tend to move towards center of mass of Boids in viewRadius
-    private void processCohesion()
+    private void processCohesion(List<Boid> boids)
     {
 
     }
 
     //Avoid collision with Non-Boids in viewRadius
-    private void processCollisionAvoidance()
+    private void processCollisionAvoidance(List<Boid> boids)
     {
 
     }
@@ -125,7 +137,6 @@ public class Boid
         //Body
         Rectangle body = new Rectangle((int)currentPosition.x, (int)currentPosition.y, 12, 12);
 
-
         //Left Wing
 
         //Right Wing
@@ -133,14 +144,27 @@ public class Boid
         //Tail
 
         //Direction of Movement line
-        Vector2d newTip = new Vector2d(12.0f, orientation);
-        Line2D line = new Line2D.Float(currentPosition.x+6, currentPosition.y+6, newTip.x, newTip.y);
+        Vector2d newTip = new Vector2d(24.0f, orientation); //Vector pointing in direction of travel
+        Vector2d augmentedCurrent = new Vector2d(currentPosition);
+        augmentedCurrent.x += 6;
+        augmentedCurrent.y += 6;
+
+
+        newTip.add(augmentedCurrent); //Add current position to it to get NT+CP
+        Line2D line = new Line2D.Float(augmentedCurrent.x, augmentedCurrent.y, newTip.x, newTip.y); //Draw line from middle of body to the tip we're going in
         //Rotate shape to facingAngle
-        g2d.rotate(Math.toRadians(orientation), (int)currentPosition.x+6, (int)currentPosition.y+6);
+
+        Vector2d centerOfBoid = new Vector2d(currentPosition);
+        centerOfBoid.x += 6;
+        centerOfBoid.y += 6;
+
+        //g2d.rotate(Math.toRadians(orientation), (int)centerOfBoid.x, (int)centerOfBoid.y);
         g2d.draw(body);
         g2d.fill(body);
 
         g2d.transform(old);
+
+        g2d.setColor(Color.RED);
         g2d.draw(line);
         g2d.dispose();
     }

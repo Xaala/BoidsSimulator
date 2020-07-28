@@ -38,12 +38,13 @@ public class Simulation extends JPanel implements ActionListener
 
         for (int i = 0; i < boidCount; i++)
         {
-//            simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
-//                    ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
-//                    this));
+            simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
+                    ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
+                    i,
+                    this));
 
-            System.out.println("Adding boid at 100, 0");
-            simulatedBoids.add(new Boid(300, 300, this));
+            //System.out.println("Adding boid at 100, 0");
+            //simulatedBoids.add(new Boid(300, 300, this));
         }
 
     }
@@ -70,7 +71,7 @@ public class Simulation extends JPanel implements ActionListener
         //Update boid position
         for (int i = 0; i < simulatedBoids.size(); i++)
         {
-            simulatedBoids.get(i).calculateMove();
+            simulatedBoids.get(i).calculateMove(simulatedBoids);
         }
 
         //Render code here?
