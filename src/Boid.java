@@ -49,23 +49,19 @@ public class Boid
     private void processSeparation(List<Boid> boids)
     {
         //Check if any boids are nearby within our field of view
-        boolean nearbyBoids = false;
         for (int i = 0; i < boids.size(); i++)
         {
             if (i != boidId) //Skip self
             {
                 if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius) {
-                    //TODO:
+                    //TODO: Add better separation
                     orientation = (orientation + 15) % 360;
                 }
             }
         }
 
-        if (nearbyBoids == false)
-        {
-            Vector2d movement = new Vector2d(velocity, orientation);
-            currentPosition.add(movement);
-        }
+        Vector2d movement = new Vector2d(velocity, orientation);
+        currentPosition.add(movement);
     }
 
     //Tend to travel in the same direction as other nearby Boids
