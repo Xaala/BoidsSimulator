@@ -10,10 +10,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Simulation extends JPanel implements ActionListener
 {
-    private final int TIMER_DELAY = 50; //50ms
+    private final int TIMER_DELAY = 7; //50ms
     private Timer timer;
 
-    public int boidCount = 20;
+    public int boidCount = 15;
 
     private Surface parent;
 
@@ -56,7 +56,6 @@ public class Simulation extends JPanel implements ActionListener
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2d.setRenderingHints(rh);
 
-        System.out.println("Processing next frame");
         for (int i = 0; i < simulatedBoids.size(); i++)
         {
             simulatedBoids.get(i).draw(g2d); //draw next frame.
@@ -66,7 +65,6 @@ public class Simulation extends JPanel implements ActionListener
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        System.out.println("Running");
 
         //Update boid position
         for (int i = 0; i < simulatedBoids.size(); i++)
@@ -80,7 +78,6 @@ public class Simulation extends JPanel implements ActionListener
 
     @Override
     public void paintComponent(Graphics g) {
-        System.out.println("Sim.paintComponent");
         super.paintComponent(g);
 
         Graphics2D gfx = (Graphics2D)g;

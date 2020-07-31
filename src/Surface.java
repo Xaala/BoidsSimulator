@@ -7,8 +7,8 @@ import java.util.List;
 public class Surface extends JFrame
 {
 
-    public int WINDOW_WIDTH = 800;
-    public int WINDOW_HEIGHT = 800;
+    public int WINDOW_WIDTH = 2000;
+    public int WINDOW_HEIGHT = 1200;
 
     public Surface()
     {

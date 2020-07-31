@@ -1,5 +1,8 @@
 import java.lang.Math.*;
 
+import static java.lang.Math.tan;
+import static java.lang.StrictMath.abs;
+
 public class Vector2d
 {
     public float x;
@@ -59,6 +62,14 @@ public class Vector2d
 
     }
 
+    public float findAngleOfApproach(Vector2d other)
+    {
+        double adjacentSide = abs(this.x - other.x) ;;
+        double oppositeSide = abs(this.y - other.y) ; //oposite side is delta( current.y, pacp.y);
+
+        return (float)tan(adjacentSide/oppositeSide);
+    }
+
     public static double distance(Vector2d a, Vector2d b)
     {
         float v0 = b.x - a.x;
@@ -66,6 +77,8 @@ public class Vector2d
 
         return Math.sqrt(v0*v0 + v1*v1);
     }
+
+
 }
 
 
