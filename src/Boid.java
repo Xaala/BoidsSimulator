@@ -23,8 +23,8 @@ public class Boid
 
     private int boidId;
 
-    private float ALIGNMENT_MODIFIER_MAGNITUDE = 2;
-    private float COHESION_MODIFIER_MAGNITUDE = 2;
+    private float ALIGNMENT_MODIFIER_MAGNITUDE = 1;
+    private float COHESION_MODIFIER_MAGNITUDE = 1;
     private float SEPARATION_MODIFIER_MAGNITUDE = 1;
     private float VIEW_RADIUS = 100.0f;
 
@@ -60,7 +60,7 @@ public class Boid
 
         //process our new movement
         currentVelocity.add(alignmentVelocity);
-        //currentVelocity.add(cohesionVelocity);
+        currentVelocity.add(cohesionVelocity);
         currentVelocity.add(separationVelocity);
 
         currentVelocity.normalize();
@@ -94,11 +94,12 @@ public class Boid
 
         if (neighbourCount == 0)
         {
-            return currentVelocity;
+            return aggregationVector;
         }
         else
         {
-            aggregationVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
+            aggregationVector.x /= neighbourCount;
+            aggregationVector.y /= neighbourCount;
 
             Vector2d returnVector = new Vector2d(aggregationVector.x, aggregationVector.y);
             returnVector.normalize();
@@ -131,11 +132,13 @@ public class Boid
 
         if (neighbourCount == 0)
         {
-            return currentVelocity;
+            return returnVector;
         }
         else
         {
-            returnVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
+            returnVector.x /= neighbourCount;
+            returnVector.y /= neighbourCount;
+
             returnVector.normalize(); //Normalize return vector.
 
             return returnVector;
@@ -162,11 +165,14 @@ public class Boid
 
         if (neighbourCount == 0)
         {
-            return currentVelocity;
+            return returnVector;
         }
         else
         {
-            returnVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
+
+            returnVector.x /= neighbourCount;
+            returnVector.y /= neighbourCount;
+
             Vector2d rv = new Vector2d(returnVector.x - currentPosition.x, returnVector.y - currentPosition.y);
             rv.normalize(); //Normalize return vector.
 
@@ -220,7 +226,7 @@ public class Boid
         g2d.setColor(bodyColor);
 
         //Body
-        Rectangle body = new Rectangle((int)currentPosition.x, (int)currentPosition.y, 6, 6);
+        Rectangle body = new Rectangle((int)currentPosition.x, (int)currentPosition.y, 8, 8);
 
         //Left Wing
 
@@ -232,8 +238,8 @@ public class Boid
         //get curret orientation
         Vector2d newTip = new Vector2d(24.0f, orientation); //Vector pointing in direction of travel
         Vector2d augmentedCurrent = new Vector2d(currentPosition);
-        augmentedCurrent.x += 3;
-        augmentedCurrent.y += 3;
+        augmentedCurrent.x += 4;
+        augmentedCurrent.y += 4;
         newTip.add(augmentedCurrent); //Add current position to it to get NT+CP
         Line2D line = new Line2D.Float(augmentedCurrent.x, augmentedCurrent.y, newTip.x, newTip.y); //Draw line from middle of body to the tip we're going in
 
@@ -241,8 +247,8 @@ public class Boid
         //Rotate shape to facingAngle
 
         Vector2d centerOfBoid = new Vector2d(currentPosition);
-        centerOfBoid.x += 3;
-        centerOfBoid.y += 3;
+        centerOfBoid.x += 4;
+        centerOfBoid.y += 4;
 
         //g2d.rotate(Math.toRadians(orientation), (int)centerOfBoid.x, (int)centerOfBoid.y);
         g2d.draw(body);

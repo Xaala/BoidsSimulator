@@ -38,17 +38,17 @@ public class Simulation extends JPanel implements ActionListener
 
         for (int i = 0; i < boidCount; i++)
         {
-//            simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
-//                    ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
-//                    i,
-//                    new Color(ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255)),
-//                    this));
-
             simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
-                    100,
+                    ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
                     i,
                     new Color(ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255)),
                     this));
+
+//            simulatedBoids.add(new Boid(400,
+//                    400,
+//                    i,
+//                    new Color(ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255)),
+//                    this));
 
             //System.out.println("Adding boid at 100, 0");
             //simulatedBoids.add(new Boid(300, 300, this));
