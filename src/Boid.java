@@ -18,20 +18,23 @@ public class Boid
     private Vector2d currentVelocity;
     private Vector2d currentPosition;
 
+
     private float velocity;
 
     private Simulation parent;
 
     private int boidId;
 
-    private int orientationGraceCounter;
+    private float ALIGNMENT_MODIFIER_MAGNITUDE = 1;
+    private float COHESION_MODIFIER_MAGNITUDE = 1;
+    private float SEPARATION_MODIFIER_MAGNITUDE = 1;
 
-    private int ORIENTATION_GRACE_VALUE = 25;
-    private int ROTATE_STEP_SIZE = 1;
+    private Color bodyColor;
 
 
-    public Boid(int x, int y, int boidId,  Simulation parent)
+    public Boid(int x, int y, int boidId, Color bodyColor, Simulation parent)
     {
+        this.bodyColor = bodyColor;
         currentPosition = new Vector2d(x, y);
         this.parent = parent;
         this.boidId = boidId;
@@ -42,26 +45,25 @@ public class Boid
         viewAngle = 270.0f;
         viewRadius = 75.0; //75px
 
-        orientationGraceCounter = 0;
     }
 
     public void calculateMove(List<Boid> boids)
     {
 
         Vector2d alignmentVelocity = processAlignment(boids);
-        //alignmentVelocity.scale(1);
+        alignmentVelocity.scale(ALIGNMENT_MODIFIER_MAGNITUDE);
         //Vector2d cohesionVelocity = processCohesion(boids);
-        //cohesionVelocity.scale(1);
-        //Vector2d separationVelocity = processSeparation(boids); //seperation-type rules last
-        //separationVelocity.scale(2);
-//        processCollisionAvoidance(boids);
+        //cohesionVelocity.scale(COHESION_MODIFIER_MAGNITUDE);
+        Vector2d separationVelocity = processSeparation(boids); //seperation-type rules last
+        separationVelocity.scale(SEPARATION_MODIFIER_MAGNITUDE);
+        //processCollisionAvoidance(boids);
 
         processWrapAround();
 
         //process our new movement
         currentVelocity.add(alignmentVelocity);
         //currentVelocity.add(cohesionVelocity);
-        //currentVelocity.add(separationVelocity);
+        currentVelocity.add(separationVelocity);
 
         currentVelocity.normalize();
         currentVelocity.scale(velocity);
@@ -75,29 +77,39 @@ public class Boid
     //Avoid smacking into other Boids
     private Vector2d processSeparation(List<Boid> boids)
     {
-        //Check if any boids are nearby within our field of view
-        Vector2d aggregationVector = new Vector2d(currentVelocity);
-        int neighbourCount = 1;
+        Vector2d aggregationVector = new Vector2d(0,0);
+        int neighbourCount = 0;
 
         for (int i = 0; i < boids.size(); i++) {
             if (i != boidId) //Skip self
             {
-                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius) {
-                    //TODO: Add better alignment rule
+                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius/2) {
+                    //TODO: Add better separation rule
+                    System.out.println("Attempting to separate..." + boidId + " and " + i);
                     neighbourCount++;
-                    aggregationVector.add(boids.get(i).currentVelocity);
+                    aggregationVector.x += boids.get(i).currentPosition.x - currentPosition.x;
+                    aggregationVector.y += boids.get(i).currentPosition.y - currentPosition.y;
+
                 }
             }
         }
 
-        aggregationVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
+        if (neighbourCount == 0)
+        {
+            return currentVelocity;
+        }
+        else
+        {
+            aggregationVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
 
-        Vector2d returnVector = new Vector2d(aggregationVector.x, aggregationVector.y);
-        returnVector.normalize();
-        returnVector.x *= -1;
-        returnVector.y *= -1;
+            Vector2d returnVector = new Vector2d(aggregationVector.x, aggregationVector.y);
+            returnVector.normalize();
+            returnVector.x *= -1;
+            returnVector.y *= -1;
 
-        return returnVector;
+            return returnVector;
+        }
+
     }
 
     //Tend to travel in the same direction as other nearby Boids
@@ -114,6 +126,9 @@ public class Boid
 //                    System.out.println("Attempting to align..." + boidId + " and " + i);
                     neighbourCount++;
                     returnVector.add(boids.get(i).currentVelocity);
+
+                    //Adopt color.
+                    this.bodyColor = boids.get(i).getBodyColor();
                 }
             }
         }
@@ -198,7 +213,7 @@ public class Boid
         //Make shape at current x,y cordinates
         AffineTransform old = g2d.getTransform();
 
-        g2d.setColor(Color.BLUE);
+        g2d.setColor(bodyColor);
 
         //Body
         Rectangle body = new Rectangle((int)currentPosition.x, (int)currentPosition.y, 12, 12);
@@ -236,4 +251,7 @@ public class Boid
         g2d.dispose();
     }
 
+    public Color getBodyColor() {
+        return bodyColor;
+    }
 }

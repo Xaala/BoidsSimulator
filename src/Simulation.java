@@ -13,7 +13,7 @@ public class Simulation extends JPanel implements ActionListener
     private final int TIMER_DELAY = 7; //50ms
     private Timer timer;
 
-    public int boidCount = 15;
+    public int boidCount = 35;
 
     private Surface parent;
 
@@ -41,6 +41,7 @@ public class Simulation extends JPanel implements ActionListener
             simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
                     ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
                     i,
+                    new Color(ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255)),
                     this));
 
             //System.out.println("Adding boid at 100, 0");
