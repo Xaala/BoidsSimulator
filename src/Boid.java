@@ -10,8 +10,6 @@ import static java.lang.StrictMath.atan;
 //A "Bird Like Object", contains logic for movement as well as rendering.
 public class Boid
 {
-
-    private double viewRadius;
     private float viewAngle;
 
     private float orientation;
@@ -25,9 +23,10 @@ public class Boid
 
     private int boidId;
 
-    private float ALIGNMENT_MODIFIER_MAGNITUDE = 1;
-    private float COHESION_MODIFIER_MAGNITUDE = 1;
+    private float ALIGNMENT_MODIFIER_MAGNITUDE = 2;
+    private float COHESION_MODIFIER_MAGNITUDE = 2;
     private float SEPARATION_MODIFIER_MAGNITUDE = 1;
+    private float VIEW_RADIUS = 100.0f;
 
     private Color bodyColor;
 
@@ -43,7 +42,6 @@ public class Boid
         velocity = 3.0f; //Default velocity of 2 px
         currentVelocity = new Vector2d(velocity, orientation);
         viewAngle = 270.0f;
-        viewRadius = 75.0; //75px
 
     }
 
@@ -52,8 +50,8 @@ public class Boid
 
         Vector2d alignmentVelocity = processAlignment(boids);
         alignmentVelocity.scale(ALIGNMENT_MODIFIER_MAGNITUDE);
-        //Vector2d cohesionVelocity = processCohesion(boids);
-        //cohesionVelocity.scale(COHESION_MODIFIER_MAGNITUDE);
+        Vector2d cohesionVelocity = processCohesion(boids);
+        cohesionVelocity.scale(COHESION_MODIFIER_MAGNITUDE);
         Vector2d separationVelocity = processSeparation(boids); //seperation-type rules last
         separationVelocity.scale(SEPARATION_MODIFIER_MAGNITUDE);
         //processCollisionAvoidance(boids);
@@ -83,7 +81,7 @@ public class Boid
         for (int i = 0; i < boids.size(); i++) {
             if (i != boidId) //Skip self
             {
-                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius/2) {
+                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < VIEW_RADIUS/2) {
                     //TODO: Add better separation rule
                     System.out.println("Attempting to separate..." + boidId + " and " + i);
                     neighbourCount++;
@@ -121,9 +119,7 @@ public class Boid
         for (int i = 0; i < boids.size(); i++) {
             if (i != boidId) //Skip self
             {
-                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius) {
-                    //TODO: Add better alignment rule
-//                    System.out.println("Attempting to align..." + boidId + " and " + i);
+                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < VIEW_RADIUS) {
                     neighbourCount++;
                     returnVector.add(boids.get(i).currentVelocity);
 
@@ -149,25 +145,33 @@ public class Boid
     //Tend to move towards center of mass of Boids in viewRadius
     private Vector2d processCohesion(List<Boid> boids)
     {
-        Vector2d aggregationVector = new Vector2d(currentVelocity);
-        int neighbourCount = 1;
+        Vector2d returnVector = new Vector2d(0,0);
+        int neighbourCount = 0;
 
         for (int i = 0; i < boids.size(); i++) {
             if (i != boidId) //Skip self
             {
-                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < viewRadius) {
-                    //TODO: Add better alignment rule
+                if (Vector2d.distance(this.currentPosition, boids.get(i).currentPosition) < VIEW_RADIUS) {
+                    //TODO: Add better cohesion rule
+//                    System.out.println("Attempting to do cohesion..." + boidId + " and " + i);
                     neighbourCount++;
-                    aggregationVector.add(boids.get(i).currentVelocity);
+                    returnVector.add(boids.get(i).currentPosition);
                 }
             }
         }
 
-        aggregationVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
+        if (neighbourCount == 0)
+        {
+            return currentVelocity;
+        }
+        else
+        {
+            returnVector.scale(1/neighbourCount); //Scale it by 1/number nearby boids.
+            Vector2d rv = new Vector2d(returnVector.x - currentPosition.x, returnVector.y - currentPosition.y);
+            rv.normalize(); //Normalize return vector.
 
-        Vector2d returnVector = new Vector2d(aggregationVector.x, aggregationVector.y);
-        returnVector.normalize();
-        return returnVector;
+            return rv;
+        }
     }
 
     //Avoid collision with Non-Boids in viewRadius
@@ -216,7 +220,7 @@ public class Boid
         g2d.setColor(bodyColor);
 
         //Body
-        Rectangle body = new Rectangle((int)currentPosition.x, (int)currentPosition.y, 12, 12);
+        Rectangle body = new Rectangle((int)currentPosition.x, (int)currentPosition.y, 6, 6);
 
         //Left Wing
 
@@ -228,8 +232,8 @@ public class Boid
         //get curret orientation
         Vector2d newTip = new Vector2d(24.0f, orientation); //Vector pointing in direction of travel
         Vector2d augmentedCurrent = new Vector2d(currentPosition);
-        augmentedCurrent.x += 6;
-        augmentedCurrent.y += 6;
+        augmentedCurrent.x += 3;
+        augmentedCurrent.y += 3;
         newTip.add(augmentedCurrent); //Add current position to it to get NT+CP
         Line2D line = new Line2D.Float(augmentedCurrent.x, augmentedCurrent.y, newTip.x, newTip.y); //Draw line from middle of body to the tip we're going in
 
@@ -237,8 +241,8 @@ public class Boid
         //Rotate shape to facingAngle
 
         Vector2d centerOfBoid = new Vector2d(currentPosition);
-        centerOfBoid.x += 6;
-        centerOfBoid.y += 6;
+        centerOfBoid.x += 3;
+        centerOfBoid.y += 3;
 
         //g2d.rotate(Math.toRadians(orientation), (int)centerOfBoid.x, (int)centerOfBoid.y);
         g2d.draw(body);

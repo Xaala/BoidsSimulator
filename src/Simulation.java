@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Simulation extends JPanel implements ActionListener
 {
-    private final int TIMER_DELAY = 7; //50ms
+    private final int TIMER_DELAY = 2; //50ms
     private Timer timer;
 
     public int boidCount = 35;
@@ -38,8 +38,14 @@ public class Simulation extends JPanel implements ActionListener
 
         for (int i = 0; i < boidCount; i++)
         {
+//            simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
+//                    ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
+//                    i,
+//                    new Color(ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255)),
+//                    this));
+
             simulatedBoids.add(new Boid(ThreadLocalRandom.current().nextInt() % parent.WINDOW_WIDTH,
-                    ThreadLocalRandom.current().nextInt() %parent.WINDOW_HEIGHT,
+                    100,
                     i,
                     new Color(ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255), ThreadLocalRandom.current().nextInt(255)),
                     this));

@@ -1,6 +1,6 @@
 import java.lang.Math.*;
 
-import static java.lang.Math.tan;
+import static java.lang.Math.*;
 import static java.lang.StrictMath.abs;
 
 public class Vector2d
@@ -39,7 +39,7 @@ public class Vector2d
 
     public void normalize()
     {
-        double length = Math.sqrt(x*x + y*y);
+        double length = sqrt(x*x + y*y);
 
         if (length != 0.0)
         {
@@ -62,6 +62,12 @@ public class Vector2d
 
     }
 
+    public float findAngleBetween(Vector2d other)
+    {
+        //TODO: Implement this at some point
+        return 0.0f;
+    }
+
     public float findAngleOfApproach(Vector2d other)
     {
         double adjacentSide = abs(this.x - other.x) ;;
@@ -75,7 +81,7 @@ public class Vector2d
         float v0 = b.x - a.x;
         float v1 = b.y - a.y;
 
-        return Math.sqrt(v0*v0 + v1*v1);
+        return sqrt(v0*v0 + v1*v1);
     }
 
 
